@@ -37,6 +37,8 @@
                         :class="`flex
                         justify-center
                         items-center
+                        w-[110px]
+                        h-[160px]
                         p-[5px]
                         border-[2px]
                         ${(photoId === photoSelectedId) ? 'border-yellow-300' : 'border-[#0000]'}
@@ -47,7 +49,10 @@
                         cursor-pointer`"
                         @click="selectPhoto(photoId)"
                     >
-                      <img :src="photo">
+                      <img
+                          :src="photo"
+                          class="photo-item"
+                      >
                     </div>
 
 
@@ -57,7 +62,12 @@
                     v-if="photos.length > photos.slice(0, 4).length"
                     class="flex justify-center text-[13px] text-blue-600 w-[100%]"
                 >
-                  <TextLink @click="openPhotosList">ещё {{photos.length - photos.slice(0, 4).length}}</TextLink>
+                  <TextLink
+                      @click="openPhotosList"
+                      class="mt-1"
+                  >
+                    ещё {{photos.length - photos.slice(0, 4).length}}
+                  </TextLink>
                 </div>
               </div>
               <div class="p-1 w-[80%]">
@@ -75,9 +85,12 @@
             <h1 class="font-medium text-[20px]">{{item?.full_title}}</h1>
 
             <!-- Rating -->
-            <div v-if="this.item?.rating" class="flex items-center gap-1">
+            <div
+                v-if="item"
+                class="flex items-center gap-1"
+            >
               <span class="font-bold"><RatingNumber :rating="item?.rating" /></span>
-              <Raiting :raiting="`${this.item?.rating}`" :size="15"/>
+              <Raiting :raiting="item?.rating" :size="15"/>
               <span class="text-slate-500 text-[11px]">({{this.item?.rating_count}})</span>
             </div>
             <!-- End Rating -->
@@ -105,13 +118,6 @@
           <!-- End Item Info -->
         </div>
         <!-- End Item Preview -->
-
-        <!-- Items Like This -->
-        <div class="flex flex-col gap-5">
-          <h2 class="font-medium text-2xl">Еще может подойти</h2>
-          <CardList/>
-        </div>
-        <!-- End Items Like This -->
 
         <!-- Other Items Of Vendor -->
         <div v-if="otherItemsOfVendor.length > 0" class="flex flex-col gap-5">
@@ -163,11 +169,11 @@
           <div v-if="item" class="flex gap-3 items-center">
             <span class="font-bold text-[60px]"><RatingNumber :rating="item?.rating" /></span>
             <div class="flex flex-col gap-1">
-              <Raiting :raiting="`${item?.rating}`" color="black" :size="15" />
+              <Raiting :raiting="item?.rating" color="black" :size="15" />
               <div class="flex gap-3 items-center text-[15px]">
-                <span>{{item?.rating_count}} оценок</span>
+                <span>{{item?.rating_count}} {{numWord(item?.rating_count ? item?.rating_count : 0, ['оценка', 'оценки', 'оценок'])}}</span>
                 <span class="text-gray-300 text-[15px]">•</span>
-                <span>{{item?.comments_count}} отзыва</span>
+                <span>{{item?.comments_count}} {{numWord(item?.comments_count ? item?.comments_count : 0, ['отзыв', 'отзыва', 'отзывов'])}}</span>
               </div>
             </div>
           </div>
@@ -205,8 +211,14 @@
       <div class="flex flex-col gap-3 w-[30%] h-[100%]" ref="rightBlock">
         <div class="flex justify-end">
           <!-- Favorite -->
-          <div class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-black transition">
-            <HeartIcon class="" :size="15" />
+          <div
+              @click.prevent="setFavorite()"
+              class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-black transition"
+          >
+            <HeartIcon
+                class="" :size="15"
+                :is-favorite="userStore.favorites.includes(item?.id)"
+            />
             <span>В избранное</span>
           </div>
           <!-- End Favorite -->
@@ -245,9 +257,20 @@
           </div>
           <!-- End Shop -->
 
-          <ButtonLarge>
+          <ButtonLarge
+              v-if="!this.userStore.basket[this.item?.id]"
+              @click="addItemToBasket"
+          >
             Добавить в корзину
           </ButtonLarge>
+
+          <CounterItemsInBasket2
+              v-else
+              :count="this.userStore?.basket[this.item?.id]?.count"
+              :add="addItemCountInBasket"
+              :remove="removeItemCountInBasket"
+              :item-id="item?.id"
+          />
         </Card>
       </div>
       <!-- End Right Section -->
@@ -263,7 +286,7 @@
               <div class="flex items-center gap-5 text-[15px]">
                 <div v-if="item" class="flex items-center gap-1">
                   <span :class="`font-bold text-[18px]`"><RatingNumber :rating="item?.rating" /></span>
-                  <Raiting :raiting="`${item?.rating}`" :size="13"/>
+                  <Raiting :raiting="item?.rating" :size="13"/>
                   <span class="text-slate-500 text-[9px]">({{item?.rating_count}})</span>
                 </div>
 
@@ -271,8 +294,14 @@
                 <TextLink>Характеристики</TextLink>
 
                 <!-- Favorite -->
-                <div class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-black transition">
-                  <HeartIcon class="" :size="15" />
+                <div
+                    @click.prevent="setFavorite()"
+                    class="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-black transition"
+                >
+                  <HeartIcon
+                      class="" :size="15"
+                      :is-favorite="userStore.favorites.includes(item?.id)"
+                  />
                   <span>В избранное</span>
                 </div>
                 <!-- End Favorite -->
@@ -297,7 +326,26 @@
             </div>
             <!-- End Price -->
 
-            <ButtonLarge class="px-[40px] rounded-[5px] text-[16px]">Добавить в корзину</ButtonLarge>
+            <div class="w-[200px]">
+              <ButtonLarge
+                  v-if="!this.userStore.basket[this.item?.id]"
+                  @click="addItemToBasket"
+              >
+                Добавить в корзину
+              </ButtonLarge>
+
+              <CounterItemsInBasket
+                  v-else
+                  :count="this.userStore?.basket[this.item?.id]?.count"
+                  :add="addItemCountInBasket"
+                  :remove="removeItemCountInBasket"
+                  :item-id="item?.id"
+                  :size="50"
+                  class="rounded-2xl"
+              />
+            </div>
+
+
           </div>
           <!-- End Price -->
         </div>
@@ -323,23 +371,36 @@ import ImageLoupe from "@/uikit/ImageLoupe.vue";
 import TextLink from "@/uikit/TextLink.vue";
 import CardList from "@/components/CardList.vue";
 import {ref} from "vue";
-import Raiting from "@/uikit/Raiting.vue";
+import Raiting from "@/uikit/rating/Raiting.vue";
 import Review from "@/components/Review.vue";
 import HeartIcon from "@/icons/HeartIcon.vue";
 import ArrowRightIcon from "@/icons/ArrowRightIcon.vue";
-import API, {SERVER_URL} from "@/api.js";
+import API, {SERVER_URL} from "@/utils/api.js";
 import axios from "axios";
 import PhotosView from "@/uikit/PhotosView.vue";
-import {usePageStore} from '@/stores/PageStore.js'
+import {usePageStore} from '@/utils/stores/PageStore.js'
 import RatingNumber from "@/uikit/RatingNumber.vue";
 import Price from "@/uikit/Price.vue";
+import {useUserStore} from '@/utils/stores/UserStore';
+import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
+import CounterItemsInBasket2 from "@/uikit/Counters/CounterItemsInBasket2.vue";
+import {numWord} from "../utils/helpers/words.js";
 
 export default {
   components: {
+    CounterItemsInBasket,
+    CounterItemsInBasket2,
     Price,
     RatingNumber,
     PhotosView,
     ArrowRightIcon, HeartIcon, Review, Raiting, CardList, TextLink, ImageLoupe, ButtonLarge, Card, LotOfText},
+
+  setup() {
+    const rightBlock = ref(null)
+    return {
+      rightBlock,
+    }
+  },
 
   data() {
     return {
@@ -350,6 +411,7 @@ export default {
       photoSelectedId: 0,
       isOpenUpMenu: false,
       pageStore: null,
+      userStore: null,
 
       // PhotosList
       isOpenPhotosList: false,
@@ -361,47 +423,79 @@ export default {
     }
   },
 
-  setup() {
-    const rightBlock = ref(null)
-    // ...
-    return {
-      rightBlock,
-    }
-  },
-
-  created () {
-    window.addEventListener('scroll', this.handleScroll);
-  },
-
   beforeMount() {
+    this.userStore = useUserStore()
     this.pageStore = usePageStore()
-
-    // Get Item
-    axios.get(`${SERVER_URL}/api/item/${this.$route.params.id}`)
-        .then(res => {
-          this.item = res.data.item
-          this.vendor = res.data.vendor
-
-          this.photos = JSON.parse(this.item.characteristics).photos
-          this.characteristics = JSON.parse(this.item.characteristics).characteristics
-
-          // Get Other Items Of Vendor
-          this.getOtherItemsOfVendor()
-
-          // Get Reviews
-          this.getReviews()
-        })
+    this.getItem()
   },
 
   mounted() {
-
+    window.addEventListener('scroll', this.handleScroll);
   },
 
   unmounted () {
     window.removeEventListener('scroll', this.handleScroll);
   },
 
+  watch: {
+    $route (to, from){
+      this.getItem()
+      window.scrollTo(0, 0);
+    }
+  },
+
   methods: {
+    numWord,
+    addItemCountInBasket(id){
+      API.post(`${SERVER_URL}/api/auth/basket/${id}/${this.userStore.basket[id].count + 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+          })
+    },
+
+    removeItemCountInBasket(id){
+      API.post(`${SERVER_URL}/api/auth/basket/${id}/${this.userStore.basket[id].count - 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+
+            if (res.data.count === 0){
+              this.userStore.removeItemFromBasket(this.item?.id)
+            }
+          })
+    },
+
+    addItemToBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id] = {
+              item_id: this.item?.id,
+              count: 1,
+            }
+          })
+    },
+
+    setFavorite(){
+      this.userStore.setFavorite(this.item?.id)
+    },
+
+    getItem(){
+      // Get Item
+      axios.get(`${SERVER_URL}/api/item/${this.$route.params.id}`)
+          .then(res => {
+            this.item = res.data.item
+            this.vendor = res.data.vendor
+
+            this.photos = JSON.parse(this.item.characteristics).photos
+            this.characteristics = JSON.parse(this.item.characteristics).characteristics
+
+            // Get Other Items Of Vendor
+            this.getOtherItemsOfVendor()
+
+            // Get Reviews
+            this.getReviews()
+          })
+    },
+
     selectPhoto(photoId){
       this.photoSelectedId = photoId
     },
@@ -447,6 +541,12 @@ export default {
 </script>
 
 <style scoped>
+
+.photo-item{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
 
 .up-menu{
   z-index: 35;

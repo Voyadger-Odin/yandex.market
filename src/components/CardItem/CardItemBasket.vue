@@ -33,15 +33,24 @@
       <div class="flex-1" />
 
       <div class="flex gap-3 text-gray-500 items-center">
-        <HeartIcon class="cursor-pointer hover:text-black transition" :size="20" />
-        <DeleteIcon class="cursor-pointer hover:text-black transition" :size="20" />
+        <HeartIcon
+            @click.prevent="setFavorite()"
+            :is-favorite="userStore.favorites.includes(item.id)"
+            class="cursor-pointer hover:text-black transition"
+            :size="20"
+        />
+        <DeleteIcon
+            @click="removeItemFromBasket(item.id)"
+            class="cursor-pointer hover:text-black transition"
+            :size="20"
+        />
       </div>
     </div>
 
 
 
 
-    <div class="flex flex-col w-[15%]">
+    <div class="flex flex-col w-[20%]">
       <!-- Price -->
       <div class="flex justify-end items-end">
         <span class="font-medium text-[25px]"><Price :price="item.promotion ? item.price_promotion : item.price" currency="" /><span class="text-[15px]">₽</span></span>
@@ -51,44 +60,35 @@
 
       <div class="flex-1" />
 
-      <div class="flex bg-gray-100 rounded-2xl overflow-hidden">
-        <!-- Less -->
-        <button class="flex justify-center items-center w-[40px] h-[40px] hover:bg-gray-200 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">
-            <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>
-          </svg>
-        </button>
-        <!-- End Less -->
-
-        <!-- Count -->
-        <div class="flex justify-center flex-1 text-center items-center font-medium">
-          {{item.count}}
-        </div>
-        <!-- End Count -->
-
-        <!-- More -->
-        <button class="flex justify-center items-center w-[40px] h-[40px] hover:bg-gray-200 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-          </svg>
-        </button>
-        <!-- End More -->
-      </div>
+      <CounterItemsInBasket
+          :count="this.userStore?.basket[this.item.id]?.count"
+          :add="this.addItemCount"
+          :remove="this.removeItemCount"
+          :item-id="item.id"
+          class="rounded-xl"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import ButtonLarge from "@/uikit/ButtonLarge.vue";
-import Raiting from "@/uikit/Raiting.vue";
 import TextLink from "@/uikit/TextLink.vue";
 import {ref} from "vue";
 import DeleteIcon from "@/icons/DeleteIcon.vue";
 import HeartIcon from "@/icons/HeartIcon.vue";
 import Price from "@/uikit/Price.vue";
+import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
+import {useUserStore} from '@/utils/stores/UserStore.js';
 
 export default {
-  components: {Price, HeartIcon, DeleteIcon, TextLink, Raiting, ButtonLarge},
+  components: {CounterItemsInBasket, Price, HeartIcon, DeleteIcon, TextLink},
+
+  props: {
+    item: Object,
+    add: Function,
+    remove: Function,
+    removeItemFromBasket: Function,
+  },
 
   setup() {
     const img_obj = ref(null)
@@ -100,15 +100,27 @@ export default {
   data() {
     return {
       photos: [],
+      userStore: null,
     }
   },
 
-  props: {
-    item: Object,
+  beforeMount() {
+    this.userStore = useUserStore()
+    this.photos = JSON.parse(this.item.characteristics).photos
   },
 
-  beforeMount() {
-    this.photos = JSON.parse(this.item.characteristics).photos
+  methods: {
+    addItemCount(id){
+      this.add(id)
+    },
+
+    removeItemCount(id){
+      this.remove(id)
+    },
+
+    setFavorite(){
+      this.userStore.setFavorite(this.item.id)
+    },
   },
 }
 </script>

@@ -23,7 +23,9 @@
     <!-- End Loupe Cursor -->
 
     <!-- Image Loupe -->
-    <div v-show="isShow" class="absolute top-0 left-[100%] w-[100%] z-30">
+    <div
+        :class="`absolute top-0 left-[100%] w-[100%] z-30 transition show-box ${isShow ? '' : 'hide'} pointer-events-none`"
+    >
       <canvas
           class="ml-[5px] shadow-2xl shadow-black]"
           ref="canvas"
@@ -38,19 +40,6 @@
 import {ref} from "vue";
 
 export default {
-  data(){
-    return {
-      isShow: false,
-      loupe_x: 0,
-      loupe_y: 0,
-      loupe_x_percent: 0,
-      loupe_y_percent: 0,
-      imgResultSize: 500,
-      cursorSize: 200,
-      scale: null
-    }
-  },
-
   props: {
     image_src: String,
   },
@@ -61,6 +50,19 @@ export default {
     return {
       loupe_plane,
       canvas
+    }
+  },
+
+  data(){
+    return {
+      isShow: false,
+      loupe_x: 0,
+      loupe_y: 0,
+      loupe_x_percent: 0,
+      loupe_y_percent: 0,
+      imgResultSize: 500,
+      cursorSize: 200,
+      scale: null
     }
   },
 
@@ -112,6 +114,7 @@ export default {
       image.src = this.image_src;
 
       image.addEventListener("load", (e) => {
+        ctx.clearRect(0, 0, this.imgResultSize, this.imgResultSize);
         const img_new_w = this.scale * (this.imgResultSize)
         const img_new_h = this.scale * (this.imgResultSize * (image.height / image.width))
 
@@ -125,6 +128,12 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+.show-box.hide{
+  opacity: 1;
+}
+.show-box.hide.hide{
+  transform: scale(1.2);
+  opacity: 0;
+}
 </style>

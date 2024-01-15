@@ -5,12 +5,6 @@
   </div>
 </template>
 
-<script>
-export default {
-
-}
-</script>
-
 <style scoped>
 .points{
   background: radial-gradient(100% 283.68% at 0 100%,#fcab14 0,#fa6641 15.91%,#be40c0 40.21%,rgba(80,90,221,0) 100%),radial-gradient(107.24% 195.45% at 100% 0,#48cce0 0,#428beb 28.85%,#505add 60.18%);

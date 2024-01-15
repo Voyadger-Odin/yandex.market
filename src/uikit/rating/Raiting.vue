@@ -36,7 +36,7 @@
 <script>
 export default {
   props: {
-    raiting: String,
+    raiting: Number,
     size: Number,
     color: String,
     gap: Number,
@@ -55,7 +55,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

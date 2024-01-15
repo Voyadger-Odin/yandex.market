@@ -23,6 +23,30 @@
                 </div>
               </div>
             </div>
+
+            <!-- Promotion -->
+            <div
+                v-if="item.promotion"
+                class="w-[100%] h-[100%] absolute bottom-0 left-0 pointer-events-none"
+            >
+              <div class="flex justify-start gap-1 w-[100%] h-auto absolute top-[78%] p-2 opacity-[100%]">
+                <div class="flex bg-green-700 px-[8px] py-[2px] text-[11px] text-white font-medium rounded-2xl">-{{getPromotion(item.price, item.price_promotion)}}%</div>
+              </div>
+            </div>
+            <!-- End Promotion -->
+
+            <!-- Favorite -->
+            <div
+                class=" absolute top-5 right-5"
+            >
+              <HeartIcon
+                  @click.prevent="setFavorite()"
+                  :is-favorite="userStore.favorites.includes(item.id)"
+                  class="cursor-pointer hover:text-black transition"
+                  :size="20"
+              />
+            </div>
+            <!-- End Favorite -->
           </div>
         </RouterLink>
 
@@ -47,9 +71,17 @@
 <script>
 import {ref} from "vue";
 import Price from "@/uikit/Price.vue";
+import {getPromotion} from '@/utils/helpers/promotion.js'
+import HeartIcon from "@/icons/HeartIcon.vue";
+import {useUserStore} from '@/utils/stores/UserStore.js';
 
 export default {
-  components: {Price},
+  components: {HeartIcon, Price},
+
+  props: {
+    item: Object,
+  },
+
   setup() {
     const img_obj = ref(null)
     return {
@@ -57,14 +89,11 @@ export default {
     }
   },
 
-  props: {
-    item: Object,
-  },
-
   data() {
     return {
       imageSelectedId: null,
       photos: [],
+      userStore: null,
     }
   },
 
@@ -73,6 +102,11 @@ export default {
       const maxCountPhotos = 5
       return this.photos.slice(0, maxCountPhotos);
     }
+  },
+
+  beforeMount() {
+    this.userStore = useUserStore()
+    this.photos = JSON.parse(this.item.characteristics).photos
   },
 
   methods: {
@@ -91,11 +125,15 @@ export default {
     hoverEndImg(){
       this.imageSelectedId = null
     },
-  },
 
-  mounted() {
-    this.photos = JSON.parse(this.item.characteristics).photos
-  }
+    getPromotion(...params){
+      return getPromotion(...params)
+    },
+
+    setFavorite(){
+      this.userStore.setFavorite(this.item.id)
+    },
+  },
 }
 </script>
 

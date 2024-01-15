@@ -1,5 +1,5 @@
 <template>
-  <header class="flex items-center justify-between gap-5 px-[10px] py-[10px] shadow">
+  <header class="flex items-center justify-between gap-5 px-[10px] py-[10px] shadow-xl">
 
     <!-- Logo -->
     <RouterLink to="/">
@@ -23,27 +23,52 @@
     <div v-if="userStore?.user" class="flex gap-4 items-center">
 
       <!-- Plus Points -->
-      <div class="flex flex-col justify-center items-center">
-        <PlusPoints class="cursor-pointer">50</PlusPoints>
-        <span class="text-[12px] text-[#777] mt-[3px]">Баллы</span>
-      </div>
+      <IconNumber :number="0" right="1px">
+        <div class="flex flex-col items-center">
+          <PlusPoints class="cursor-pointer">50</PlusPoints>
+          <span class="text-[12px] text-[#777] mt-[5px]">
+            Баллы
+          </span>
+        </div>
+      </IconNumber>
       <!-- End Plus Points -->
 
       <!-- Orders -->
       <RouterLink :to="{name: 'orders'}">
-        <IconNumber img="/img/box.svg">Заказы</IconNumber>
+        <IconNumber :number="0" right="1px">
+          <div class="flex flex-col items-center">
+            <img class="w-[20px]" src="/img/box.svg">
+            <span class="text-[12px] text-[#777] mt-[5px]">
+              Заказы
+            </span>
+          </div>
+        </IconNumber>
       </RouterLink>
       <!-- End Orders -->
 
       <!-- Favorites -->
       <RouterLink :to="{name: 'favorites'}">
-        <IconNumber img="/img/favorites.svg" :number="3">Избранное</IconNumber>
+        <IconNumber :number="userStore.favorites.length" right="10px">
+          <div class="flex flex-col items-center">
+            <img class="w-[20px]" src="/img/favorites.svg">
+              <span class="text-[12px] text-[#777] mt-[5px]">
+              Избранное
+            </span>
+          </div>
+        </IconNumber>
       </RouterLink>
       <!-- End Favorites -->
 
       <!-- Basket -->
       <RouterLink :to="{name: 'basket'}">
-        <IconNumber img="/img/basket.svg" :number="5">Корзина</IconNumber>
+        <IconNumber :number="Object.keys(userStore?.basket).length" right="5px">
+          <div class="flex flex-col items-center">
+            <img class="w-[20px]" src="/img/basket.svg">
+            <span class="text-[12px] text-[#777] mt-[5px]">
+              Корзина
+            </span>
+          </div>
+        </IconNumber>
       </RouterLink>
       <!-- End Basket -->
 
@@ -62,11 +87,9 @@
 </template>
 
 <script>
-import API, {SERVER_URL} from "@/api.js";
-import {accessToken} from "@/stores/auth.js";
 import IconNumber from "@/uikit/IconNumber.vue";
 import ProfileMenu from "@/components/ProfileMenu.vue";
-import {useUserStore} from '@/stores/UserStore'
+import {useUserStore} from '@/utils/stores/UserStore'
 import LogoHeader from "@/uikit/LogoHeader.vue";
 import PlusPoints from "@/uikit/PlusPoints.vue";
 
@@ -79,21 +102,11 @@ export default {
     }
   },
 
-  mounted() {
+  beforeMount() {
     this.userStore = useUserStore()
   },
 
   methods: {
-    logOut() {
-      API.post(`${SERVER_URL}/api/auth/logout`)
-          .then(res => {
-            localStorage.removeItem('access_token')
-            accessToken.value = null
-            this.$forceUpdate()
-            this.$router.push({name: 'login'})
-          })
-    },
-
     toLogin() {
       this.$router.push({name: 'login'})
     },
@@ -102,8 +115,5 @@ export default {
 </script>
 
 <style scoped>
-.{
-  background: #ffdd00;
-}
 
 </style>

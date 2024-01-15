@@ -7,12 +7,12 @@
 </template>
 
 <script lang="js">
-import {useUserStore} from '@/stores/UserStore'
-import API, {SERVER_URL} from "@/api.js";
+import {useUserStore} from '@/utils/stores/UserStore'
+import API, {SERVER_URL} from "@/utils/api.js";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 import PhotosView from "@/uikit/PhotosView.vue";
-import {usePageStore} from '@/stores/PageStore.js'
+import {usePageStore} from '@/utils/stores/PageStore.js'
 
 export default {
   components: {PhotosView, Footer, Header},
@@ -24,21 +24,13 @@ export default {
     }
   },
 
-  beforeMount() {
+  beforeCreate() {
     this.userStore = useUserStore()
-    this.pageStore = usePageStore()
+    this.userStore.getUserInfo()
   },
 
-  mounted() {
-    this.accessToken = localStorage.getItem('access_token')
-
-    if (this.accessToken){
-      API.post(`${SERVER_URL}/api/auth/me`)
-          .then(res => {
-            this.userStore.user = res.data
-            console.log(this.userStore.user)
-          })
-    }
+  beforeMount() {
+    this.pageStore = usePageStore()
   },
 
   methods: {

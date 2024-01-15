@@ -32,6 +32,19 @@
             </div>
             <!-- End Promotion -->
           </div>
+
+          <!-- Favorite -->
+          <div
+              class=" absolute top-5 right-5"
+          >
+            <HeartIcon
+                @click.prevent="setFavorite()"
+                :is-favorite="userStore.favorites.includes(item.id)"
+                class="cursor-pointer hover:text-black transition"
+                :size="25"
+            />
+          </div>
+          <!-- End Favorite -->
         </RouterLink>
 
       </div>
@@ -48,12 +61,14 @@
       <!-- End Price -->
 
       <!-- Title -->
-      <TextLink class="title line-clamp-3 text-blue-600">{{item.title}}</TextLink>
+      <RouterLink :to="{name: 'item_detail', params: {id: item.id}}">
+        <TextLink class="title line-clamp-3 text-blue-600">{{item.title}}</TextLink>
+      </RouterLink>
       <!-- End Title -->
 
       <!-- Rating -->
       <div class="flex items-center gap-1 text-[13px]">
-        <Raiting :raiting="`${item.rating}`" :size="12"/>
+        <Raiting :raiting="item.rating" :size="12"/>
         <span class="text-slate-500 text-[11px]">({{item.rating_count}})</span>
       </div>
       <!-- End Rating -->
@@ -62,22 +77,42 @@
 
     <div class="flex-1"></div>
 
-    <ButtonLarge class="p-[8px] rounded-[5px] text-[15px]">
+    <ButtonLarge
+        v-if="!this.userStore.basket[this.item?.id]"
+        @click="addItemToBasket"
+        class="p-[8px] rounded-[5px] text-[15px]"
+    >
       В корзину
     </ButtonLarge>
+    <CounterItemsInBasket
+        v-else
+        :count="userStore?.basket[this.item.id]?.count"
+        :add="addItemCountInBasket"
+        :remove="removeItemCountInBasket"
+        :item-id="item.id"
+        class="rounded"
+    />
   </div>
 </template>
 
 <script>
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
-import Raiting from "@/uikit/Raiting.vue";
+import Raiting from "@/uikit/rating/Raiting.vue";
 import TextLink from "@/uikit/TextLink.vue";
 import {ref} from "vue";
 import Price from "@/uikit/Price.vue";
-import {getPromotion} from '@/helpers/promotion.js'
+import {getPromotion} from '@/utils/helpers/promotion.js'
+import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
+import API, {SERVER_URL} from "@/utils/api.js";
+import {useUserStore} from '@/utils/stores/UserStore.js';
+import HeartIcon from "@/icons/HeartIcon.vue";
 
 export default {
-  components: {Price, TextLink, Raiting, ButtonLarge},
+  components: {HeartIcon, CounterItemsInBasket, Price, TextLink, Raiting, ButtonLarge},
+
+  props: {
+    item: Object,
+  },
 
   setup() {
     const img_obj = ref(null)
@@ -88,17 +123,10 @@ export default {
 
   data() {
     return {
+      userStore: null,
       imageSelectedId: null,
       photos: [],
     }
-  },
-
-  props: {
-    item: Object,
-  },
-
-  beforeMount() {
-    this.photos = JSON.parse(this.item.characteristics).photos
   },
 
   computed: {
@@ -106,6 +134,11 @@ export default {
       const maxCountPhotos = 5
       return this.photos.slice(0, maxCountPhotos);
     }
+  },
+
+  beforeMount() {
+    this.userStore = useUserStore()
+    this.photos = JSON.parse(this.item.characteristics).photos
   },
 
   methods: {
@@ -127,7 +160,39 @@ export default {
 
     getPromotion(...params){
       return getPromotion(...params)
-    }
+    },
+
+    addItemToBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id] = {
+              item_id: this.item?.id,
+              count: 1,
+            }
+          })
+    },
+
+    addItemCountInBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count + 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+          })
+    },
+
+    removeItemCountInBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count - 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+
+            if (res.data.count === 0){
+              this.userStore.removeItemFromBasket(this.item?.id)
+            }
+          })
+    },
+
+    setFavorite(){
+      this.userStore.setFavorite(this.item.id)
+    },
   }
 }
 </script>

@@ -1,22 +1,31 @@
 <template>
-  <br><br><br><br>
-  <div class="form">
-    <div>
-      <h1>Login Page</h1>
-      <br><br>
+  <div class="flex justify-center mt-[100px]">
+    <Card class="flex flex-col gap-[20px]">
+      <h1 class="text-[20px] font-medium">Авторизация</h1>
       <div v-if="error">
         <p class="error" >{{error}}</p>
         <br>
       </div>
 
-      <input v-model="email" type="text" name="email" placeholder="login">
-      <br><br>
-      <input v-model="password" type="password" name="password" placeholder="password">
-      <br><br>
-      <button @click.prevent="login">Login</button>
-      <br><br>
-      <RouterLink to="/registration">Registration</RouterLink>
-    </div>
+      <input
+          v-model="email"
+          type="text"
+          name="email"
+          placeholder="Логин"
+          class="outline-none p-2 rounded-xl bg-gray-200 focus:bg-white transition"
+      >
+      <input
+          v-model="password"
+          type="password"
+          name="password"
+          placeholder="Пароль"
+          class="outline-none p-2 rounded-xl bg-gray-200 focus:bg-white transition"
+      >
+      <ButtonLarge @click.prevent="login">Войти</ButtonLarge>
+      <RouterLink :to="{name: 'registration'}">
+        <TextLink class="text-blue-700">Регистрация</TextLink>
+      </RouterLink>
+    </Card>
   </div>
 </template>
 
@@ -24,11 +33,15 @@
 
 
 import axios from "axios";
-import API, {SERVER_URL} from "@/api.js";
-import {accessToken} from "@/stores/auth.js";
-import {useUserStore} from '@/stores/UserStore'
+import {SERVER_URL} from "@/utils/api.js";
+import {useUserStore} from '@/utils/stores/UserStore'
+import Card from "@/uikit/Card.vue";
+import ButtonRound from "@/uikit/Buttons/ButtonRound.vue";
+import ButtonLarge from "@/uikit/ButtonLarge.vue";
+import TextLink from "@/uikit/TextLink.vue";
 
 export default {
+  components: {TextLink, ButtonLarge, ButtonRound, Card},
   data() {
     return {
       email: null,
@@ -38,40 +51,25 @@ export default {
     }
   },
 
-  mounted() {
+  beforeMount() {
     this.userStore = useUserStore()
   },
 
   methods: {
     login() {
-      axios.post(`${SERVER_URL}/api/auth/login`, {email: this.email, password: this.password})
-          .then(res => {
-
-
-            localStorage.setItem('access_token', res.data.access_token)
-            accessToken.value = res.data.access_token
-
-            API.post(`${SERVER_URL}/api/auth/me`)
-                .then(res => {
-                  this.userStore.user = res.data
-                  console.log(this.userStore.user)
-                })
-
-            this.$router.push({name: 'profile'})
-          })
-          .catch(error => {
-            this.error = error.response.data.error
-          })
+      this.userStore.login(this.email, this.password, (status, message) => {
+        if (status === 'OK'){
+          this.$router.push({name: 'profile'})
+        }else{
+          this.error = message
+        }
+      })
     }
   }
 }
 </script>
 
 <style scoped>
-.form{
-  display: flex;
-  justify-content: center;
-}
 
 .error{
   color: red;

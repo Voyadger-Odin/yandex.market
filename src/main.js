@@ -3,7 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue/dist/vue.esm-bundler';
 import {createPinia} from "pinia";
 import App from './App.vue'
-import router from "@/router.js";
+import router from "@/utils/router.js";
 
 const app = createApp(App)
 

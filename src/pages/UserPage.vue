@@ -10,13 +10,19 @@
 </template>
 
 <script>
-import API, {SERVER_URL} from "@/api.js";
+import API, {SERVER_URL} from "@/utils/api.js";
+import {useUserStore} from '@/utils/stores/UserStore'
 
 export default {
   data() {
     return {
+      userStore: null,
       secret_data: null,
     }
+  },
+
+  beforeMount() {
+    this.userStore = useUserStore()
   },
 
   mounted() {
@@ -26,17 +32,6 @@ export default {
           this.secret_data = res.data.secret_data
         })
   },
-
-  methods: {
-    Logout() {
-      API.post(`${SERVER_URL}/api/auth/logout`)
-          .then(res => {
-            console.log(res.data)
-          })
-      localStorage.removeItem('access_token')
-      //this.$router.push({name: 'home'})
-    },
-  }
 }
 </script>
 

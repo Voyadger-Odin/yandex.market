@@ -1,7 +1,7 @@
 <template>
   <div
       class="avatar-box flex items-center justify-center"
-      :style="`width: ${!props.size ? '46px' : props.size}; height: ${!props.size ? '46px' : props.size}`"
+      :style="`width: ${!size ? '46px' : size}; height: ${!size ? '46px' : size}`"
   >
     <img
         class="rounded-[100%] border-[2px] border-[white] img"
@@ -11,11 +11,13 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  img: String,
-  size: String,
-})
+<script>
+export default {
+  props: {
+    img: String,
+    size: String,
+  },
+}
 </script>
 
 <style scoped>

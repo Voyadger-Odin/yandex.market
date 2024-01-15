@@ -1,5 +1,5 @@
 import axios from "axios";
-import router from "@/router.js";
+import router from "@/utils/router.js";
 
 export const SERVER_URL = 'https://viror.ru'
 
@@ -25,7 +25,6 @@ api.interceptors.response.use(config => {
     return config
 }, error => {
     if(error.response.data.message === 'Token has expired'){
-        console.log(1111111111)
         return axios.post(`${SERVER_URL}/api/auth/refresh`, {}, {
             headers: {
                 authorization: `Bearer ${localStorage.getItem('access_token')}`

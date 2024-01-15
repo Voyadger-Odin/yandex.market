@@ -3,7 +3,7 @@
     <div class="card-img-box-square">
       <div class="card-img-box">
 
-        <RouterLink :to="{name: 'item_detail', params: {id: item.id}}" target="_blank">
+        <RouterLink :to="{name: 'item_detail', params: {id: item.id}}">
           <div class="card-img">
             <img class="img" :src="photos[0]">
           </div>
@@ -30,7 +30,7 @@
 
       <!-- Rating -->
       <div class="flex items-center gap-1 text-[13px]">
-        <Raiting :raiting="`${item.rating}`" :size="12"/>
+        <Raiting :raiting="item.rating" :size="12"/>
         <span class="text-slate-500 text-[11px]">({{item.rating_count}})</span>
       </div>
       <!-- End Rating -->
@@ -39,31 +39,83 @@
 
     <div class="flex-1"></div>
 
-    <ButtonLarge class="p-[5px] rounded-[5px] text-[13px]">
+    <ButtonLarge
+        @click="addItemToBasket"
+        v-if="!userStore.basket[item?.id]"
+        class="p-[5px] rounded-[5px] text-[13px]"
+    >
       В корзину
     </ButtonLarge>
+    <CounterItemsInBasket
+        v-else
+        :count="userStore.basket[this.item.id]?.count"
+        :add="addItemCountInBasket"
+        :remove="removeItemCountInBasket"
+        :item-id="item.id"
+        :size="29"
+        class="rounded"
+    />
   </div>
 </template>
 
 <script>
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
-import Raiting from "@/uikit/Raiting.vue";
+import Raiting from "@/uikit/rating/Raiting.vue";
 import Price from "@/uikit/Price.vue";
+import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
+import {useUserStore} from '@/utils/stores/UserStore.js';
+import API, {SERVER_URL} from "@/utils/api.js";
 
 export default {
-  components: {Price, Raiting, ButtonLarge},
-  data() {
-    return {
-      photos: [],
-    }
-  },
+  components: {CounterItemsInBasket, Price, Raiting, ButtonLarge},
 
   props: {
     item: Object,
   },
 
+  data() {
+    return {
+      userStore: null,
+      photos: [],
+    }
+  },
+
+  beforeMount() {
+    this.userStore = useUserStore()
+  },
+
   mounted() {
     this.photos = JSON.parse(this.item.characteristics).photos
+  },
+
+  methods: {
+    addItemToBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id] = {
+              item_id: this.item?.id,
+              count: 1,
+            }
+          })
+    },
+
+    addItemCountInBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count + 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+          })
+    },
+
+    removeItemCountInBasket(){
+      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count - 1}`)
+          .then(res => {
+            this.userStore.basket[this.item?.id].count = res.data.count
+
+            if (res.data.count === 0){
+              this.userStore.removeItemFromBasket(this.item?.id)
+            }
+          })
+    },
   },
 }
 </script>

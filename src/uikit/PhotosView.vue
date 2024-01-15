@@ -7,8 +7,8 @@
       <div
           v-for="(photo, i) in photos"
           :class="`
-          w-[150px]
-          h-[200px]
+            w-[150px]
+            h-[200px]
             flex
             justify-center
             items-center
@@ -23,7 +23,10 @@
             `"
           @click="selectPhoto(i)"
       >
-        <img :src="photo">
+        <img
+            :src="photo"
+            class="photo-item"
+        >
       </div>
     </div>
     <!-- End Photos List -->
@@ -100,10 +103,13 @@ export default {
 
   data() {
     return {
-      //photos: ['https://avatars.mds.yandex.net/get-mpic/10637301/2a0000018b1a05d9ba16cdde7d13a3b994e2/optimize'],
       photoSelectedId: 0,
       isHoverPhoto: false,
     }
+  },
+
+  beforeMount() {
+    this.photosListOpenCallback.callback = this.open
   },
 
   mounted() {
@@ -112,10 +118,6 @@ export default {
 
   unmounted() {
     document.removeEventListener('keydown', this.escape)
-  },
-
-  beforeMount() {
-    this.photosListOpenCallback.callback = this.open
   },
 
   methods: {
@@ -155,6 +157,13 @@ export default {
 </script>
 
 <style scoped>
+
+.photo-item{
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
 .close{
   transform: scale(1.1);
   pointer-events: none;

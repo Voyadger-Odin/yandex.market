@@ -15,9 +15,10 @@
 <script>
 
 import {defineComponent} from "vue";
-import CardItem from "@/components/CardItem.vue";
-import {SERVER_URL} from "@/api.js";
+import CardItem from "@/components/CardItem/CardItem.vue";
+import {SERVER_URL} from "@/utils/api.js";
 import axios from "axios";
+import {useUserStore} from '@/utils/stores/UserStore'
 
 export default defineComponent({
   components: {CardItem},
@@ -25,7 +26,12 @@ export default defineComponent({
   data(){
     return {
       items: [],
+      userStore: null,
     }
+  },
+
+  beforeMount() {
+    this.userStore = useUserStore()
   },
 
   mounted() {

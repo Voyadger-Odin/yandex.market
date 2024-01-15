@@ -40,7 +40,7 @@
             <div class="flex">
               <img class="menu-icon" src="/img/basket.svg">
               <span class="ml-5">Корзина</span>
-              <span class="ml-2 text-slate-400">5</span>
+              <span class="ml-2 text-slate-400">{{(Object.keys(userStore?.basket).length > 0) ? Object.keys(userStore?.basket).length : ''}}</span>
             </div>
           </RouterLink>
         </li>
@@ -52,7 +52,7 @@
             <div class="flex">
               <img class="menu-icon" src="/img/favorites.svg">
               <span class="ml-5">Избранное</span>
-              <span class="ml-2 text-slate-400">3</span>
+              <span class="ml-2 text-slate-400">{{(userStore.favorites.length > 0) ? userStore.favorites.length : ''}}</span>
             </div>
           </RouterLink>
         </li>
@@ -87,12 +87,13 @@
 </template>
 
 <script>
-import API, {SERVER_URL} from "@/api.js";
-import {useUserStore} from '@/stores/UserStore'
+import API, {SERVER_URL} from "@/utils/api.js";
+import {useUserStore} from '@/utils/stores/UserStore'
 import UserIcon from "@/uikit/UserIcon.vue";
 
 export default {
   components: {UserIcon},
+
   data() {
     return {
       isOpenMenu: false,
@@ -100,7 +101,7 @@ export default {
     }
   },
 
-  mounted() {
+  beforeMount() {
     this.userStore = useUserStore()
   },
 
@@ -114,13 +115,9 @@ export default {
 
     logOut() {
       this.closeMenu()
-      API.post(`${SERVER_URL}/api/auth/logout`)
-          .then(res => {
-            localStorage.removeItem('access_token')
-            this.userStore.user = null
-            this.$forceUpdate()
-            this.$router.push({name: 'login'})
-          })
+      this.userStore.logout(() => {
+        this.$router.push({name: 'login'})
+      })
     },
   },
 }

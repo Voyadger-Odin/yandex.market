@@ -16,14 +16,14 @@
 
 <script>
 export default {
+  props: {
+    lineCount: Number,
+  },
+
   data(){
     return {
       isOpen: false,
     }
-  },
-
-  props: {
-    lineCount: Number,
   },
 
   methods: {
@@ -37,7 +37,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

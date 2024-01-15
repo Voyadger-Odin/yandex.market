@@ -10,10 +10,11 @@ export default {
 
   computed: {
     getRating(){
-      if(this.rating === Math.floor(this.rating)){
-        return `${this.rating}.0`
+      let newRating = Math.floor(this.rating * 10) / 10
+      if(newRating === Math.floor(newRating)){
+        return `${newRating}.0`
       }
-      return this.rating
+      return newRating
     },
   },
 }
