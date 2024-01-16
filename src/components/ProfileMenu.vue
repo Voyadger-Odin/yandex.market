@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <UserIcon @click="openMenu" class="cursor-pointer" :img="this.userStore?.user?.img" size="46px" />
+    <UserIcon @click="openMenu" class="cursor-pointer" :img="userStore?.user?.img" size="46px" />
 
     <div v-if="isOpenMenu" class="bg-[white] w-[300px] absolute z-30 top-0 right-0 p-[10px] shadow-2xl" @click.stop="">
 
@@ -9,13 +9,13 @@
           <RouterLink :to="{name: 'profile'}" @click.prevent="closeMenu">
             <div class="flex gap-3">
               <!-- Avatar -->
-              <UserIcon class="cursor-pointer" :img="this.userStore?.user?.img" />
+              <UserIcon class="cursor-pointer" :img="userStore?.user?.img" />
               <!-- End Avatar -->
 
               <!-- Name -->
               <div class="flex flex-col">
-                <span class="font-bold">{{`${this.userStore?.user?.name} ${this.userStore?.user?.surname}`}}</span>
-                <span class="text-slate-500 text-[13px]">{{this.userStore?.user?.email}}</span>
+                <span class="font-bold">{{`${userStore?.user?.name} ${userStore?.user?.surname}`}}</span>
+                <span class="text-slate-500 text-[13px]">{{userStore?.user?.email}}</span>
               </div>
               <!-- End Name -->
 

@@ -78,17 +78,17 @@
     <div class="flex-1"></div>
 
     <ButtonLarge
-        v-if="!this.userStore.basket[this.item?.id]"
-        @click="addItemToBasket"
+        v-if="!userStore.basket[item?.id]"
+        @click="userStore.addItemToBasket(item?.id)"
         class="p-[8px] rounded-[5px] text-[15px]"
     >
       В корзину
     </ButtonLarge>
     <CounterItemsInBasket
         v-else
-        :count="userStore?.basket[this.item.id]?.count"
-        :add="addItemCountInBasket"
-        :remove="removeItemCountInBasket"
+        :count="userStore?.basket[item.id]?.count"
+        :add="userStore.addItemCountInBasket"
+        :remove="userStore.removeItemCountInBasket"
         :item-id="item.id"
         class="rounded"
     />
@@ -160,34 +160,6 @@ export default {
 
     getPromotion(...params){
       return getPromotion(...params)
-    },
-
-    addItemToBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id] = {
-              item_id: this.item?.id,
-              count: 1,
-            }
-          })
-    },
-
-    addItemCountInBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count + 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-          })
-    },
-
-    removeItemCountInBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count - 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-
-            if (res.data.count === 0){
-              this.userStore.removeItemFromBasket(this.item?.id)
-            }
-          })
     },
 
     setFavorite(){

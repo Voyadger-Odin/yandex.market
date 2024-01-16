@@ -3,7 +3,7 @@
     <div class="grid grid-cols-6 gap-[15px] w-[1450px]">
       <!-- Card -->
       <CardItem
-          v-for="item in this.items"
+          v-for="item in items"
           :key="item.id"
           :item="item"
       />

@@ -114,7 +114,7 @@ import GeoFillIcon from "@/icons/GeoFillIcon.vue";
 import {usePageStore} from "@/utils/stores/PageStore.js";
 import axios from "axios";
 import {SERVER_URL} from "@/utils/api.js";
-import RatingNumber from "@/uikit/RatingNumber.vue";
+import RatingNumber from "@/uikit/rating/RatingNumber.vue";
 import Modal from "@/uikit/Modal.vue";
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
 import {useUserStore} from '@/utils/stores/UserStore';
@@ -141,8 +141,6 @@ export default {
         .then(res => {
           this.vendor = res.data.vendor
           this.items = res.data.items
-
-          console.log(res.data.vendor)
         })
   },
 

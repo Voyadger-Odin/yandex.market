@@ -61,9 +61,9 @@
       <div class="flex-1" />
 
       <CounterItemsInBasket
-          :count="this.userStore?.basket[this.item.id]?.count"
-          :add="this.addItemCount"
-          :remove="this.removeItemCount"
+          :count="userStore?.basket[item.id]?.count"
+          :add="addItemCount"
+          :remove="removeItemCount"
           :item-id="item.id"
           class="rounded-xl"
       />

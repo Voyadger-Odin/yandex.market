@@ -40,7 +40,7 @@
     <div class="flex-1"></div>
 
     <ButtonLarge
-        @click="addItemToBasket"
+        @click="userStore.addItemToBasket(item?.id)"
         v-if="!userStore.basket[item?.id]"
         class="p-[5px] rounded-[5px] text-[13px]"
     >
@@ -48,9 +48,9 @@
     </ButtonLarge>
     <CounterItemsInBasket
         v-else
-        :count="userStore.basket[this.item.id]?.count"
-        :add="addItemCountInBasket"
-        :remove="removeItemCountInBasket"
+        :count="userStore.basket[item.id]?.count"
+        :add="userStore.addItemCountInBasket"
+        :remove="userStore.removeItemCountInBasket"
         :item-id="item.id"
         :size="29"
         class="rounded"
@@ -86,36 +86,6 @@ export default {
 
   mounted() {
     this.photos = JSON.parse(this.item.characteristics).photos
-  },
-
-  methods: {
-    addItemToBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id] = {
-              item_id: this.item?.id,
-              count: 1,
-            }
-          })
-    },
-
-    addItemCountInBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count + 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-          })
-    },
-
-    removeItemCountInBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item.id}/${this.userStore.basket[this.item.id].count - 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-
-            if (res.data.count === 0){
-              this.userStore.removeItemFromBasket(this.item?.id)
-            }
-          })
-    },
   },
 }
 </script>

@@ -52,12 +52,42 @@ export const useUserStore = defineStore('userStore', {
                 })
         },
 
+        addItemToBasket(item_id){
+            API.post(`${SERVER_URL}/api/auth/basket/${item_id}`)
+                .then(res => {
+                    if (!this.user){return}
+
+                    this.basket[item_id] = {
+                        item_id: item_id,
+                        count: 1,
+                    }
+                })
+        },
+
         removeItemFromBasket(item_id, callback){
             API.delete(`${SERVER_URL}/api/auth/basket/${item_id}`)
                 .then(res => {
                     delete this.basket[item_id]
                     if (callback){
                         callback()
+                    }
+                })
+        },
+
+        addItemCountInBasket(item_id){
+            API.post(`${SERVER_URL}/api/auth/basket/${item_id}/${this.basket[item_id].count + 1}`)
+                .then(res => {
+                    this.basket[item_id].count = res.data.count
+                })
+        },
+
+        removeItemCountInBasket(item_id){
+            API.post(`${SERVER_URL}/api/auth/basket/${item_id}/${this.basket[item_id].count - 1}`)
+                .then(res => {
+                    this.basket[item_id].count = res.data.count
+
+                    if (res.data.count === 0){
+                        this.removeItemFromBasket(item_id)
                     }
                 })
         },

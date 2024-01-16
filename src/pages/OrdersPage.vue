@@ -73,7 +73,7 @@
           @click="sendReview"
           class="mt-5"
       >
-        {{(!this.reviewAdvantages && !this.reviewFlaws && !this.reviewComment) ?
+        {{(!reviewAdvantages && !reviewFlaws && !reviewComment) ?
           'Отправить без отзыва'
           :
           'Отправить отзыв'
@@ -92,7 +92,7 @@ import Modal from "@/uikit/Modal.vue";
 import RatingSelect from "@/uikit/rating/RatingSelect.vue";
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
 import {ref} from "vue";
-import RatingNumber from "@/uikit/RatingNumber.vue";
+import RatingNumber from "@/uikit/rating/RatingNumber.vue";
 
 export default {
   components: {RatingNumber, ButtonLarge, RatingSelect, Modal, CardOrder},

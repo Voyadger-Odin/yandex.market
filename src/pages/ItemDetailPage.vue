@@ -91,7 +91,7 @@
             >
               <span class="font-bold"><RatingNumber :rating="item?.rating" /></span>
               <Rating :rating="item?.rating" :size="15"/>
-              <span class="text-slate-500 text-[11px]">({{this.item?.rating_count}})</span>
+              <span class="text-slate-500 text-[11px]">({{item?.rating_count}})</span>
             </div>
             <!-- End Rating -->
 
@@ -258,17 +258,17 @@
           <!-- End Shop -->
 
           <ButtonLarge
-              v-if="!this.userStore.basket[this.item?.id]"
-              @click="addItemToBasket"
+              v-if="!userStore.basket[item?.id]"
+              @click="userStore.addItemToBasket(item?.id)"
           >
             Добавить в корзину
           </ButtonLarge>
 
           <CounterItemsInBasket2
               v-else
-              :count="this.userStore?.basket[this.item?.id]?.count"
-              :add="addItemCountInBasket"
-              :remove="removeItemCountInBasket"
+              :count="userStore?.basket[item?.id]?.count"
+              :add="userStore.addItemCountInBasket"
+              :remove="userStore.removeItemCountInBasket"
               :item-id="item?.id"
           />
         </Card>
@@ -328,17 +328,17 @@
 
             <div class="w-[200px]">
               <ButtonLarge
-                  v-if="!this.userStore.basket[this.item?.id]"
-                  @click="addItemToBasket"
+                  v-if="!userStore.basket[item?.id]"
+                  @click="userStore.addItemToBasket(item?.id)"
               >
                 Добавить в корзину
               </ButtonLarge>
 
               <CounterItemsInBasket
                   v-else
-                  :count="this.userStore?.basket[this.item?.id]?.count"
-                  :add="addItemCountInBasket"
-                  :remove="removeItemCountInBasket"
+                  :count="userStore?.basket[item?.id]?.count"
+                  :add="userStore.addItemCountInBasket"
+                  :remove="userStore.removeItemCountInBasket"
                   :item-id="item?.id"
                   :size="50"
                   class="rounded-2xl"
@@ -379,7 +379,7 @@ import API, {SERVER_URL} from "@/utils/api.js";
 import axios from "axios";
 import PhotosView from "@/uikit/PhotosView.vue";
 import {usePageStore} from '@/utils/stores/PageStore.js'
-import RatingNumber from "@/uikit/RatingNumber.vue";
+import RatingNumber from "@/uikit/rating/RatingNumber.vue";
 import Price from "@/uikit/Price.vue";
 import {useUserStore} from '@/utils/stores/UserStore';
 import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
@@ -446,33 +446,6 @@ export default {
 
   methods: {
     numWord,
-    addItemCountInBasket(id){
-      API.post(`${SERVER_URL}/api/auth/basket/${id}/${this.userStore.basket[id].count + 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-          })
-    },
-
-    removeItemCountInBasket(id){
-      API.post(`${SERVER_URL}/api/auth/basket/${id}/${this.userStore.basket[id].count - 1}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id].count = res.data.count
-
-            if (res.data.count === 0){
-              this.userStore.removeItemFromBasket(this.item?.id)
-            }
-          })
-    },
-
-    addItemToBasket(){
-      API.post(`${SERVER_URL}/api/auth/basket/${this.item?.id}`)
-          .then(res => {
-            this.userStore.basket[this.item?.id] = {
-              item_id: this.item?.id,
-              count: 1,
-            }
-          })
-    },
 
     setFavorite(){
       this.userStore.setFavorite(this.item?.id)
