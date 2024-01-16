@@ -1,19 +1,34 @@
 <template>
-  <div>
-    <h1>User {{$route.params.id}} Page</h1>
+  <div class="flex justify-center items-center w-[100%] h-[50vh]">
+    <Card class="flex flex-col gap-3 w-[40%] shadow-2xl">
+      <div class="flex gap-3">
+        <UserIcon
+            :img="userStore.user?.img"
+            size="100px"
+        />
+        <div class="flex flex-col flex-1 justify-center">
+          <span class="text-[30px] font-medium">{{userStore.user?.name}} {{userStore.user?.surname}}</span>
+          <span class="text-[20px]">{{userStore.user?.email}}</span>
+        </div>
+      </div>
 
-    <br><br>
-
-    <h2>Secret data: {{(secret_data) ? secret_data : 'loading'}}</h2>
-
+      <div class="flex flex-col">
+        <div class="flex gap-1">
+          <span class="text-gray-600">Адрес доставки:</span>
+          <span class="">{{userStore.user?.address}}</span>
+        </div>
+      </div>
+    </Card>
   </div>
 </template>
 
 <script>
-import API, {SERVER_URL} from "@/utils/api.js";
 import {useUserStore} from '@/utils/stores/UserStore'
+import Card from "@/uikit/Card.vue";
+import UserIcon from "@/uikit/UserIcon.vue";
 
 export default {
+  components: {UserIcon, Card},
   data() {
     return {
       userStore: null,
@@ -26,11 +41,7 @@ export default {
   },
 
   mounted() {
-    API.post(`${SERVER_URL}/api/auth/secret`, {})
-        .then(res => {
-          console.log(res.data)
-          this.secret_data = res.data.secret_data
-        })
+
   },
 }
 </script>

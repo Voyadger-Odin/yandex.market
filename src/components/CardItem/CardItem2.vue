@@ -30,7 +30,7 @@
 
       <!-- Rating -->
       <div class="flex items-center gap-1 text-[13px]">
-        <Raiting :raiting="item.rating" :size="12"/>
+        <Rating :rating="item.rating" :size="12"/>
         <span class="text-slate-500 text-[11px]">({{item.rating_count}})</span>
       </div>
       <!-- End Rating -->
@@ -60,14 +60,14 @@
 
 <script>
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
-import Raiting from "@/uikit/rating/Raiting.vue";
+import Rating from "@/uikit/rating/Rating.vue";
 import Price from "@/uikit/Price.vue";
 import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
 import {useUserStore} from '@/utils/stores/UserStore.js';
 import API, {SERVER_URL} from "@/utils/api.js";
 
 export default {
-  components: {CounterItemsInBasket, Price, Raiting, ButtonLarge},
+  components: {CounterItemsInBasket, Price, Rating, ButtonLarge},
 
   props: {
     item: Object,

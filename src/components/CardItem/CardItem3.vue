@@ -68,7 +68,7 @@
 
       <!-- Rating -->
       <div class="flex items-center gap-1 text-[13px]">
-        <Raiting :raiting="item.rating" :size="12"/>
+        <Rating :rating="item.rating" :size="12"/>
         <span class="text-slate-500 text-[11px]">({{item.rating_count}})</span>
       </div>
       <!-- End Rating -->
@@ -97,7 +97,7 @@
 
 <script>
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
-import Raiting from "@/uikit/rating/Raiting.vue";
+import Rating from "@/uikit/rating/Rating.vue";
 import TextLink from "@/uikit/TextLink.vue";
 import {ref} from "vue";
 import Price from "@/uikit/Price.vue";
@@ -108,7 +108,7 @@ import {useUserStore} from '@/utils/stores/UserStore.js';
 import HeartIcon from "@/icons/HeartIcon.vue";
 
 export default {
-  components: {HeartIcon, CounterItemsInBasket, Price, TextLink, Raiting, ButtonLarge},
+  components: {HeartIcon, CounterItemsInBasket, Price, TextLink, Rating, ButtonLarge},
 
   props: {
     item: Object,

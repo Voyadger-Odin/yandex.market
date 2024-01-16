@@ -3,6 +3,13 @@
     <div class="h-[100%] w-[70%] flex flex-col gap-10">
       <h1 class="font-medium text-[45px]">Мои заказы</h1>
 
+      <div
+          v-if="orders?.length === 0"
+          class="flex justify-center items-center h-[100%]"
+      >
+        <span class="text-gray-500 text-[20px]">Вы ещё ничего не заказали 😔</span>
+      </div>
+
       <div class="grid grid-cols-1 gap-5">
         <CardOrder
             v-for="order in orders"
@@ -24,8 +31,8 @@
 
       <!-- Rating -->
       <div class="flex flex-col gap-1">
-        <span class="text-[20px] font-medium">Оценка</span>
-        <RaitingSelect
+        <span class="text-[20px] font-medium">Оценка<span v-if="reviewRating">: <RatingNumber :rating="reviewRating" /></span></span>
+        <RatingSelect
             :size="40"
             :gap="5"
             :rating-selected-callback="ratingSelected"
@@ -69,7 +76,7 @@
         {{(!this.reviewAdvantages && !this.reviewFlaws && !this.reviewComment) ?
           'Отправить без отзыва'
           :
-          'Отправить оценку'
+          'Отправить отзыв'
         }}
       </ButtonLarge>
     </div>
@@ -82,12 +89,13 @@ import {useUserStore} from '@/utils/stores/UserStore';
 import API, {SERVER_URL} from "@/utils/api.js";
 import CardOrder from "@/components/CardItem/CardOrder.vue";
 import Modal from "@/uikit/Modal.vue";
-import RaitingSelect from "@/uikit/rating/RaitingSelect.vue";
+import RatingSelect from "@/uikit/rating/RatingSelect.vue";
 import ButtonLarge from "@/uikit/ButtonLarge.vue";
 import {ref} from "vue";
+import RatingNumber from "@/uikit/RatingNumber.vue";
 
 export default {
-  components: {ButtonLarge, RaitingSelect, Modal, CardOrder},
+  components: {RatingNumber, ButtonLarge, RatingSelect, Modal, CardOrder},
 
   setup() {
     const ratingSelector = ref(null)
@@ -115,12 +123,7 @@ export default {
 
   beforeMount() {
     this.userStore = useUserStore()
-
-    API.get(`${SERVER_URL}/api/auth/orders`)
-        .then(res => {
-          this.orders = res.data
-          console.log(res.data)
-        })
+    this.getOrdersList()
   },
 
   mounted() {
@@ -132,6 +135,13 @@ export default {
   },
 
   methods: {
+    getOrdersList(){
+      API.get(`${SERVER_URL}/api/auth/orders`)
+          .then(res => {
+            this.orders = res.data
+          })
+    },
+
     getOrderIndexById(order_id){
       for(let i=0; i<this.orders.length; i++){
         if (this.orders[i].id === order_id){
@@ -142,6 +152,10 @@ export default {
 
     sendReviewOpenModal(order_id){
       this.reviewRating = null
+      this.reviewAdvantages = ''
+      this.reviewFlaws = ''
+      this.reviewComment = ''
+
       const order_index = this.getOrderIndexById(order_id)
       this.orderReviewSelectedItemId = this.orders[order_index].item_id
       this.reviewOrderTitle = this.orders[order_index].title
@@ -177,7 +191,8 @@ export default {
 
       API.post(`${SERVER_URL}/api/auth/reviews`, {'review': review})
           .then(res => {
-            console.log(res.data)
+            this.getOrdersList()
+            this.closeModalReview()
           })
     },
   },

@@ -146,7 +146,21 @@ export default {
         })
   },
 
+  mounted() {
+    document.addEventListener('keydown', this.closeModalEscapeKeydown)
+  },
+
+  unmounted() {
+    document.removeEventListener('keydown', this.closeModalEscapeKeydown)
+  },
+
   methods: {
+    closeModalEscapeKeydown(event){
+      if(event.code === 'Escape'){
+        this.closeModal()
+      }
+    },
+
     getVendorName(){
       let name = ''
       if (this.vendor?.type === 'IP'){name += 'ИП'}

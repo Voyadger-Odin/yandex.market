@@ -120,8 +120,8 @@
             v-else
             class="flex flex-col"
         >
-          <Raiting
-              :raiting="order.grade"
+          <Rating
+              :rating="order.grade"
               :size="23"
               :gap="10"
           />
@@ -162,10 +162,10 @@ import ButtonLarge from "@/uikit/ButtonLarge.vue";
 import {datetimeConverter} from "@/utils/helpers/datetime.js";
 import {useUserStore} from '@/utils/stores/UserStore.js';
 import TextLink from "@/uikit/TextLink.vue";
-import Raiting from "@/uikit/rating/Raiting.vue";
+import Rating from "@/uikit/rating/Rating.vue";
 
 export default {
-  components: {Raiting, TextLink, ButtonLarge, Price},
+  components: {Rating, TextLink, ButtonLarge, Price},
 
   props: {
     order: Object,

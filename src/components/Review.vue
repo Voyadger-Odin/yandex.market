@@ -6,7 +6,7 @@
     <div class="flex flex-col gap-3 w-[100%]">
       <div>
         <TextLink class="font-medium">{{review.name}} {{review.surname ? review.surname : ''}}</TextLink>
-        <Raiting :raiting="review.grade" color="#ffb300" :gap="4" :size="13" />
+        <Rating :rating="review.grade" color="#ffb300" :gap="4" :size="13" />
       </div>
 
       <div class="flex flex-col gap-2 text-[14px]">
@@ -21,12 +21,12 @@
 
 <script>
 import TextLink from "@/uikit/TextLink.vue";
-import Raiting from "@/uikit/rating/Raiting.vue";
+import Rating from "@/uikit/rating/Rating.vue";
 import {dateConverter} from '@/utils/helpers/datetime.js';
 
 export default {
   methods: {dateConverter},
-  components: {Raiting, TextLink},
+  components: {Rating, TextLink},
 
   props: {
     review: Object,

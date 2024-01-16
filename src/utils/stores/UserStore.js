@@ -22,7 +22,6 @@ export const useUserStore = defineStore('userStore', {
                         favorites.push(favorite.item_id)
                     })
                     this.favorites = favorites
-                    console.log(res.data)
 
                     res.data.basket.forEach((item) => {
                         this.basket[item.item_id] = item

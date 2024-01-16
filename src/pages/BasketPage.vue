@@ -181,6 +181,7 @@ export default {
         basket: this.userStore.basket
       })
           .then(res => {
+            this.userStore.basket = {}
             this.getItems()
           })
     },

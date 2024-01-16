@@ -31,7 +31,7 @@
             <div class="flex gap-3">
               <div class="flex flex-col w-[20%]">
                 <div class="flex-1">
-                  <div class="grid h-[100%] gap-4 grid-rows-4">
+                  <div class="flex flex-col h-[100%] gap-4 grid-rows-4">
                     <div
                         v-for="(photo, photoId) in photos.slice(0,4)"
                         :class="`flex
@@ -90,7 +90,7 @@
                 class="flex items-center gap-1"
             >
               <span class="font-bold"><RatingNumber :rating="item?.rating" /></span>
-              <Raiting :raiting="item?.rating" :size="15"/>
+              <Rating :rating="item?.rating" :size="15"/>
               <span class="text-slate-500 text-[11px]">({{this.item?.rating_count}})</span>
             </div>
             <!-- End Rating -->
@@ -165,11 +165,11 @@
         <div class="flex flex-col gap-5">
           <h2 class="font-medium text-2xl">Отзывы</h2>
 
-          <!-- Raiting -->
+          <!-- Rating -->
           <div v-if="item" class="flex gap-3 items-center">
             <span class="font-bold text-[60px]"><RatingNumber :rating="item?.rating" /></span>
             <div class="flex flex-col gap-1">
-              <Raiting :raiting="item?.rating" color="black" :size="15" />
+              <Rating :rating="item?.rating" color="black" :size="15" />
               <div class="flex gap-3 items-center text-[15px]">
                 <span>{{item?.rating_count}} {{numWord(item?.rating_count ? item?.rating_count : 0, ['оценка', 'оценки', 'оценок'])}}</span>
                 <span class="text-gray-300 text-[15px]">•</span>
@@ -177,7 +177,7 @@
               </div>
             </div>
           </div>
-          <!-- End Raiting -->
+          <!-- End Rating -->
 
           <!-- Review -->
           <div v-if="reviews && reviews.length > 0" class="flex flex-col gap-10">
@@ -286,7 +286,7 @@
               <div class="flex items-center gap-5 text-[15px]">
                 <div v-if="item" class="flex items-center gap-1">
                   <span :class="`font-bold text-[18px]`"><RatingNumber :rating="item?.rating" /></span>
-                  <Raiting :raiting="item?.rating" :size="13"/>
+                  <Rating :rating="item?.rating" :size="13"/>
                   <span class="text-slate-500 text-[9px]">({{item?.rating_count}})</span>
                 </div>
 
@@ -371,7 +371,7 @@ import ImageLoupe from "@/uikit/ImageLoupe.vue";
 import TextLink from "@/uikit/TextLink.vue";
 import CardList from "@/components/CardList.vue";
 import {ref} from "vue";
-import Raiting from "@/uikit/rating/Raiting.vue";
+import Rating from "@/uikit/rating/Rating.vue";
 import Review from "@/components/Review.vue";
 import HeartIcon from "@/icons/HeartIcon.vue";
 import ArrowRightIcon from "@/icons/ArrowRightIcon.vue";
@@ -384,7 +384,7 @@ import Price from "@/uikit/Price.vue";
 import {useUserStore} from '@/utils/stores/UserStore';
 import CounterItemsInBasket from "@/uikit/Counters/CounterItemsInBasket.vue";
 import CounterItemsInBasket2 from "@/uikit/Counters/CounterItemsInBasket2.vue";
-import {numWord} from "../utils/helpers/words.js";
+import {numWord} from "@/utils/helpers/words.js";
 
 export default {
   components: {
@@ -393,7 +393,7 @@ export default {
     Price,
     RatingNumber,
     PhotosView,
-    ArrowRightIcon, HeartIcon, Review, Raiting, CardList, TextLink, ImageLoupe, ButtonLarge, Card, LotOfText},
+    ArrowRightIcon, HeartIcon, Review, Rating, CardList, TextLink, ImageLoupe, ButtonLarge, Card, LotOfText},
 
   setup() {
     const rightBlock = ref(null)

@@ -60,12 +60,10 @@
 
         <!-- Shops -->
         <li class="menu-item">
-          <RouterLink :to="{name: 'favorites'}" @click.prevent="closeMenu">
-            <div class="flex">
-              <img class="menu-icon" src="/img/shop.svg">
-              <span class="ml-5">Мои магазины</span>
-            </div>
-          </RouterLink>
+          <div class="flex">
+            <img class="menu-icon" src="/img/shop.svg">
+            <span class="ml-5">Мои магазины</span>
+          </div>
         </li>
         <!-- End Shops -->
 
